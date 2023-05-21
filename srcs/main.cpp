@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 22:44:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 01:54:57 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/21 02:50:02 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 string	recv_message(int fd)
 {
 	string		res = "";
-	char		b[10000];
+	char		b[1024];
 	int			size;
 	
 	size = 1;
 	while (size)
 	{
-		size = recv(fd, b, 9999, 0);
+		size = recv(fd, b, 1023, 0);
 		if (size <= 0)
 		{
 			perror("retars");
@@ -29,7 +29,7 @@ string	recv_message(int fd)
 		}
 		b[size] = 0;
         res.append(b, size);
-		cout.write(b, size);
+		//cout.write(b, size);
 
 	}
 	return (res);

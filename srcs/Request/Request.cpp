@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 23:23:44 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 02:09:44 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/21 03:00:00 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void Request::get_post(string &text)
 		t_post post;
 		vector<string> temp = split(lines[i], "\r\n");
 		int ind = 0;
+		printr(lines[i].substr(0, 500));
 		start:
 		while (ind < (int)temp.size() && temp[ind] == "")
 			ind++;
@@ -87,7 +88,7 @@ void Request::get_post(string &text)
 		}
 		while (ind < (int)temp.size() && temp[ind] == "")
 			ind++;
-		post.content = temp[ind];
+		post.content = join(temp, ind, (int)temp.size() - 1, "\r\n");
 
 		cout << "post.name\t\t" << post.name << endl;
 		cout << "post.filename\t\t" << post.filename << endl;

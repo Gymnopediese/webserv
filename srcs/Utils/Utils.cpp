@@ -6,11 +6,21 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/29 18:48:22 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/20 11:08:52 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/21 02:59:23 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header.hpp"
+
+void printr(string r)
+{
+    size_t found = r.find('\r');
+    while (found != std::string::npos) {
+        r[found] = '$';
+       found = r.find('\r', found + 1);
+    }
+	cout << r << endl;
+}
 
 vector<string>	split(string to_split, string del)
 {
@@ -50,6 +60,19 @@ vector<string>	split(string to_split, char del)
 		to_split = to_split.substr(ind + 1);
 	}
 	res.push_back(to_split);
+	return (res);
+}
+
+string	join(vector<string> to_split, int start, int end, string del)
+{
+	string	res = "";
+	
+	for (int i = start; i < end; i++)
+	{
+		res += to_split[i];
+		if (i < (int) to_split.size() - 1)
+			res += del;
+	}
 	return (res);
 }
 

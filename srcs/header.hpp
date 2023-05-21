@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/29 00:46:01 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 01:56:21 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/21 02:59:19 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,11 @@ bool file_exist(const std::string& name);
 
 void 	append_file(const std::string& filename, const std::string& content);
 void	create_file(string filename, string content);
+void 	printr(string r);
 
+
+
+string	join(vector<string> to_split, int start, int end, string del);
 // template <typename T>
 // void	print(vector<T> v)
 // {
