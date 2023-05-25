@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 16:14:47 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 01:20:22 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/25 00:06:24 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define CONFIG_HPP
 
 #include "../header.hpp"
+
 
 enum requests {
 	GET,
@@ -26,50 +27,46 @@ enum requests {
 // autre serveur).																	  !
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
 class Response;
 
 class Config
 {
 private:
 
-	// the fd of the socket of the port
-	int					fd;
-
-	// default html if the request point to a directory
-	string				index;
-
-	// the allowed request on this config, uses requests enum
-	// can be changed to map or whetever feels the best
-	int 				allowed[3];
-
-	map<int, string>	error_pages;
-	// list of the aliases linked to that config
-	map<string, string>	aliases;
-
-	// list of the redirections linked to that config
-	map<string, string>	redirections;
-
-
-	// dont know lol
-	bool				repertory_listing;
-
-	// Dont know if necessary
-	vector<string>	php_cgi_extentions;
-	vector<string>	python_cgi_extentions;
 	
 public:
 	// list of the host linked to that config
-	vector<string>	hostnames;
+	vector<string>		hostnames;
+
+	unsigned long long int		client_max_body_size;
 	// the port link to that config
-	const int				port;
-	const string			root;
+	int					port;
+	string				root;
+		// the fd of the socket of the port
+	int					fd;
+	map<int, string>	error_pages;
+	// Dont know if necessary
+	t_cgi				php;
+	vector<t_cgi>		cgis;
+	vector<t_location>	locations;
 
 	Config();
 	Config(vector<string> hostnames, int port, string root);
 	~Config();
 
-	Response get(Request request);
-	Response post(Request request);
-	Response delete_(Request request);
+	t_cgi*		get_cgi(Request &request);
+	t_location &get_location(Request &request);
+	Response 	get(Request &request);
+	Response 	delete_(Request &request);
+	Response 	response(Request &request);
+	void		get_html(Request &request, Response &response);
+	void		exec_cgi(Request &requests, Response &response, t_cgi &cgi);
+	Response	get_response(Request &request, t_location &my_location);
+	void	 	_post(Request &request, Response &response);
+	void		_delete(Request &request, Response &response);
 };
+
+std::ostream& operator<<(std::ostream& os, const Config& dt);
+
 #endif

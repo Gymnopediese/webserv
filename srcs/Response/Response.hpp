@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 16:14:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/20 10:18:47 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/25 00:52:55 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,25 +16,36 @@
 #include "../header.hpp"
 
 // definir comme ca les reponse error et normal
-#define OK200(type, content) Response(200, "OK", type, vector<string>(), content)
-#define FAVICON(content) Response(200, "OK", "image/x-icon", vector<string>(), content)
 
+typedef struct s_late
+{
+	long long 			start;
+	int					pid;
+	int					fd;
+	int					client;
+	bool				waiting;
+}	t_late;
+
+class Config;
 
 class Response
 {
 private:
+public:
+	Config				*conf;
+	t_late				late;
 	int					status;
 	string				status_message;
 	string				content_type;
 	string				content;
-	map<string, string>	header;
-	map<string, string>	cookie;
+	vector<string>		header;
+	vector<string>		cookie;
 
-public:
-
-	Response(void);
-	Response(int status, string status_message, string content_type, vector<string> header, string content);
+	Response();
+	Response(int status, Config &conf, string content = "");
 	~Response();
+	Response& operator=(const Response &copy);
+	bool	get_late_content();
 	string	str(void);
 };
 

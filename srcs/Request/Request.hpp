@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 16:14:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 01:40:21 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/25 10:43:05 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,23 +28,35 @@ typedef struct s_post
 class Request
 {
 private:
-	string			http_version;
-	string			content;
-	string			boundary;
-	map<string, string>	header;
 
 public:
-	string			file;
-	string			file_extention;
-	string			type;
-	string			port;
-	string			host;
-	vector<t_post>	post;
+	string				http_version;
+	string				content;
+	string				boundary;
+	string				content_type;
+	map<string, string>	headers;
+	string				header;
+	int					fd;
+	string				uri;
+	string				path_info;
+	string				global_path_info;
+	string				query;
+	string				file;
+	string				file_extention;
+	string				type;
+	string				port;
+	string				host;
+	vector<t_post>		post;
 	map<string, string>	cookie;
 	Request(void);
-	Request(string request_text);
+	Request(int fd);
+	void	get_headers();
+	void	get_body(long long int size);
 	void	get_cookies();
-	void	get_post(string &text);
+	void	get_post();
+
+	void	add_headers(vector<string> lines);
+
 	~Request();
 };
 #endif

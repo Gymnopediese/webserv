@@ -6,7 +6,7 @@
 #    By: albaud <albaud@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/18 00:51:09 by albaud            #+#    #+#              #
-#    Updated: 2023/05/20 19:02:12 by albaud           ###   ########.fr        #
+#    Updated: 2023/05/22 20:23:07 by albaud           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,9 @@ import requests
 
 
 my = requests.get("http://localhost:4141/post.html")
-his = requests.get("http://localhost:4343/post.html")
+his = requests.get("http://localhost:4343/post.html", cookies={
+	"session": fjhadjf
+})
 
 def comp(a, b):
     if a != b:

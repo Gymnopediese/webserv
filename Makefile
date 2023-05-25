@@ -6,7 +6,7 @@
 #    By: albaud <albaud@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 14:57:19 by albaud            #+#    #+#              #
-#    Updated: 2023/05/20 15:59:28 by albaud           ###   ########.fr        #
+#    Updated: 2023/05/24 22:54:36 by albaud           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,3 +62,6 @@ nginx	:
 
 test	:
 		python help/test.py
+
+show	:
+		lsof -i4 | grep 4242

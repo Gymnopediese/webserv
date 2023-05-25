@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:02:34 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/19 19:57:44 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/23 00:42:08 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define ERRORS_HPP
 
 #include "../header.hpp"
+
 
 // Informational 1xx
 #define HTTP_CONTINUE 100          // Used to continue the request
@@ -34,6 +35,7 @@
 #define HTTP_UNAUTHORIZED 401      // Authentication is required and has failed or has not been provided
 #define HTTP_FORBIDDEN 403         // The server understood the request but refuses to authorize it
 #define HTTP_NOT_FOUND 404         // The requested resource could not be found on the server
+#define HTTP_PAYLOAD_TOO_LARGE 413
 
 // Server Error 5xx
 #define HTTP_INTERNAL_SERVER_ERROR 500  // A generic error message, typically when an unexpected condition was encountered
@@ -44,6 +46,7 @@
 // Custom Defines
 #define HTTP_CUSTOM_ERROR_1 550     // Custom error code 1
 #define HTTP_CUSTOM_ERROR_2 551     // Custom error code 2
+
 
 #endif
 

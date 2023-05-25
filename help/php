@@ -1,0 +1,2 @@
+./cgi_tester
+php-cgi $1

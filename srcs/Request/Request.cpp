@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 23:23:44 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 03:00:00 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/25 00:56:33 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,36 +14,13 @@
 
 #define VITER(type, variable) for (vector<type>::iterator val = variable.begin(); val < variable.end(); val++)
 
-string	subfrom(string str, string sub)
-{
-	int		start;
-
-	start = str.find(sub);
-	if (start == -1)
-		return ("");
-	return (str.substr(start + sub.length()));
-}
-
-string	subfromto(string str, string sub, string subend)
-{
-	int		start;
-	int		end;
-
-	start = str.find(sub);
-	end = str.find(subend, start + sub.length());
-	if (start == -1 || end == -1)
-		return ("");
-	start += sub.length();
-	return (str.substr(start, end - start));
-}
-
 void Request::get_cookies()
 {
 	string 			cook;
 	vector<string>	vars;
 	vector<string>	var;
 
-	cook = header["Cookie"];
+	cook = headers["Cookie"];
 	if (cook == "")
 		return ;
 	vars = split(cook, "; ");
@@ -54,20 +31,19 @@ void Request::get_cookies()
 	}
 }
 
-void Request::get_post(string &text)
+void Request::get_post()
 {
 	int i;
 	cout << "lines" << endl;
-	boundary = "--" + subfrom(header["Content-Type"], "boundary=");
+	boundary = "--" + subfrom(headers["Content-Type"], "boundary=");
 	if (boundary == "--")
 		return ;
-	vector<string> lines = split(text, boundary);
+	vector<string> lines = split(content, boundary);
 	for (i = 1; i < (int)lines.size(); i++)
 	{
 		t_post post;
 		vector<string> temp = split(lines[i], "\r\n");
 		int ind = 0;
-		printr(lines[i].substr(0, 500));
 		start:
 		while (ind < (int)temp.size() && temp[ind] == "")
 			ind++;
@@ -89,7 +65,6 @@ void Request::get_post(string &text)
 		while (ind < (int)temp.size() && temp[ind] == "")
 			ind++;
 		post.content = join(temp, ind, (int)temp.size() - 1, "\r\n");
-
 		cout << "post.name\t\t" << post.name << endl;
 		cout << "post.filename\t\t" << post.filename << endl;
 		cout << "post.contentype\t" << post.content_type << endl;
@@ -98,31 +73,118 @@ void Request::get_post(string &text)
 	}
 }
 
-Request::Request(string request_text)
+void Request::get_headers()
 {
-	int i;
-	vector<string> lignes = split(request_text, "\r\n");
-	vector<string> key_pair = split(lignes[0], " ");
-	type = key_pair[0];
-	file = key_pair[1];
-	http_version = key_pair[2];
-	file_extention = split(file, ".")[1];
-	for (i = 1; i < (int)lignes.size(); i++)
+	string		res = "";
+	char		b[1024 + 1];
+	int			size;
+	
+	errno = 0;
+	size = 1;
+	while (size)
 	{
-		key_pair = split(lignes[i], ": ");
-		if (key_pair.size() == 2)
-			header[key_pair[0]] = key_pair[1];
-		else
+		size = recv(fd, b, 1024, 0);
+		if (size <= 0)
+		{
+			perror("retars");
 			break;
+		}
+		b[size] = 0;
+        res.append(b, size);
+		if (res.find("\r\n\r\n") >= 0)
+		{
+			std::pair<string, string> pair = split2(res, "\r\n\r\n");
+			header = pair.first;
+			content = pair.second;
+			return ;
+		}
 	}
-	key_pair = split(header["Host"], ":");
-	host = key_pair[0];
-	port = key_pair[1];
+	error("invalid request");
+	return ;
+}
+
+int get_divider(long long int s)
+{
+	int	n = 0;
+	while (s / ++n > 10480);
+	return (n);
+}
+
+void Request::get_body(long long int s)
+{
+	if (s - content.length() < 0)
+		error("413 mes gross couilles");
+	s -= content.length();
+	int				n = get_divider(s);
+	string			res = "";
+	char			b[s / n + 1];
+	int				size = 1;
+	long long int	r = 0;
+
+	r = 0;
+	while (1)
+	{
+		if (r > s)
+			error("413 mes gross couilles");
+		size = recv(fd, b, s / n, 0);
+		if (size <= 0)
+		{
+			perror("no body");
+			if (type == "POST")
+				get_post();
+			return ;
+		}
+		b[size] = 0;
+        res.append(header, size);
+	}
+}
+
+void	Request::add_headers(vector<string> lines)
+{
+	std::pair<string, string> pair;
+	for (size_t i = 1; i < lines.size(); i++)
+	{
+		pair = split2(lines[i], ": ");
+		if (pair.first != "")
+			headers[pair.first] = pair.second;
+		else
+			error("invalid headers");
+	}
+}
+
+Request::Request(int fd) : fd(fd)
+{
+	get_headers();
+	std::pair<string, string> pair;
+	vector<string> lignes = split(header, "\r\n");
+	vector<string> key_pair = split(lignes[0], " ");
+	
+	type = key_pair[0];
+	strtolower(type);
+	http_version = key_pair[2];
+	file = key_pair[1];
+	uri = key_pair[1];
+	query = split2(uri, "?").second;
+	uri = split2(uri, "?").first;
+	file = uri;
+	file_extention = "." + split2(file, ".").second;
+	path_info = "/" + split2(file_extention, "/").second;
+	file_extention = split2(file_extention, "/").first;
+	uri = split2(file, ".").first;
+	if (file_extention != ".")
+		uri += file_extention;
+	file = uri;
+	add_headers(lignes);
+	pair = split2(headers["Host"], ":");
+	host = pair.first;
+	port = pair.second;
+	get_cookies();
+
+	cout << header << endl;
 	if (type == "POST")
 	{
-		get_post(request_text);
+		content_type = split2(headers["Content-Type"], ";").first;
 	}
-	get_cookies();
 }
 
 Request::Request(void){}

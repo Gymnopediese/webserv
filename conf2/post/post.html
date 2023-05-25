@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Upload</title>
+</head>
+<body>
+  <h1>Upload a File</h1>
+  <form action="/database" method="POST" enctype="multipart/form-data">
+    <input type="file" name="fileToUpload" id="fileToUpload">
+    <input type="submit" value="Upload">
+  </form>
+  <button onclick="deleteFile()">Delete</button>
+
+  <script>
+    function deleteFile() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('DELETE', '/database/hello', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            alert('File deleted successfully.');
+          } else {
+            alert('Failed to delete file.');
+          }
+        }
+      };
+      xhr.send();
+    }
+  </script>
+</body>
+</html>

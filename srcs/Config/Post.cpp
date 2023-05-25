@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:37:57 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 02:52:22 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/25 00:52:59 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,15 @@ string date()
 	return (d.str());
 }
 
-Response Config::post(Request request)
+void	Config::_post(Request &request, Response &response)
 {
-
-	for (int i = 0; i < (int)request.post.size(); i++)
-	{
-		if (request.post[i].filename != "")
-			create_file("database/" + request.post[i].filename, request.post[i].content);
-		else
-			append_file("database/" + request.post[i].name, date() + request.post[i].content + "\n");
-	}
-	return (OK200("application/json", "okok"));
+	(void)request;
+	(void)response;
+	// for (int i = 0; i < (int)request.post.size(); i++)
+	// {
+	// 	if (request.post[i].filename != "")
+	// 		create_file("database/" + request.post[i].filename, request.post[i].content);
+	// 	else
+	// 		append_file("database/" + request.post[i].name, date() + request.post[i].content + "\n");
+	// }
 }

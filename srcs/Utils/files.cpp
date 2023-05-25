@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 23:17:02 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/21 01:56:09 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/22 23:31:56 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,10 @@ string file_to_str(string filename)
 bool file_exist(const std::string& name) {
     ifstream f(name.c_str());
     return f.good();
+}
+
+bool dir_exist(const std::string& name) {
+	errno = 0;
+    open(name.c_str(), O_WRONLY);
+    return errno == 21;
 }
