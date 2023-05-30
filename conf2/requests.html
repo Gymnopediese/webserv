@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Request from File</title>
+    <script>
+        function sendRequest() {
+            var fileInput = document.getElementById('fileInput');
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+                var request = event.target.result;
+
+                // Send the request to the server
+                // Replace 'your-server-url' with the actual server URL
+                // You can use any method like fetch or XMLHttpRequest to send the request
+                fetch('/', {
+                    method: 'POST',
+                    body: request
+                }).then(function (response) {
+                    // Handle the response from the server
+                    console.log('Response:', response);
+                }).catch(function (error) {
+                    // Handle any errors that occur during the request
+                    console.error('Error:', error);
+                });
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</head>
+<body>
+    <h1>Send Request from File</h1>
+    <input type="file" id="fileInput" accept=".txt">
+    <button onclick="sendRequest()">Send Request</button>
+</body>
+</html>

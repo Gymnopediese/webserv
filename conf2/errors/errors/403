@@ -1,0 +1,3 @@
+DELETE /errors/CANTACCESS HTTP/1.1
+Host: albaud.42.ch:4242
+

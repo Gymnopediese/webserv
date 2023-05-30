@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:26:45 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/24 21:53:23 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/30 00:36:26 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,9 @@ t_socket	open_socket(int port)
 	}
 	if (bind(res.fd, (struct sockaddr *) &res.adress, sizeof(res.adress)) == -1) 
         error("ERROR on binding");
+	stringstream message;
+	message << "PORT " << port << " binded on fd " << res.fd << RESET;
+	harl(INFOS, message.str());
 	return res;
 }
 
@@ -53,7 +56,8 @@ void	Server::open_sockets(void)
 		{
 			sockets[(*config).port] = (open_socket((*config).port));
 			done.push_back((*config).port);
-			fds.push_back((pollfd){sockets[(*config).port].fd, POLLIN, POLLIN});
+			pollfds[sockets[(*config).port].fd] = (pollfd){sockets[(*config).port].fd, POLLIN, 0};
+			socket_in.push_back(sockets[(*config).port].fd);
 			listen(sockets[(*config).port].fd, 1024);
 		}
 	}

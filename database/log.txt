@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/albaud/Desktop/Coding++/42/rank_05/webserv/./conf2/python/wait.py", line 8, in <module>
+    sleep(10000)
+KeyboardInterrupt
+s file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'REQUEST.TXT'
+

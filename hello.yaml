@@ -1,5 +1,5 @@
 conf:
-  port: 4242
+  port: 80
   host: localhost
   root: ./conf
   client_max_body_size: 10g
@@ -21,16 +21,25 @@ conf:
     405: /50x.html
   location: /
     index: /index.html
-
   location: /instagram
     return:
       all: 302 https://www.instagram.com/
-
-
+conf:
+  port: 404
+  host: albaud.42.ch
+  root: ./default
+  client_max_body_size: 10g
+  cgi:
+    php:
+      extentions: .php .hph .phpello
+      path: /opt/homebrew/bin/php-cgi
+  location: /
+    allow: get
+    deny: all
 conf:
   port: 4242
-  host: albaud.42.ch www.albaud.42.ch 127.0.0.1
-  root: ./conf2
+  host: localhost
+  root: ./conf
   client_max_body_size: 10g
   cgi:
     php:
@@ -45,20 +54,38 @@ conf:
     user2:
       extentions: .cpp
       path: /opt/homebrew/bin/python3
-  error:
-    404: /404.html
-    405: /50x.html
   location: /
-    # tryfile: on
     index: /index.html
+  location: /instagram
+    return:
+      all: 302 https://www.instagram.com/
+conf:
+  port: 4242
+  host: albaud.42.ch www.albaud.42.ch 127.0.0.1
+  root: ./conf2
+  client_max_body_size: 3m
+  cgi:
+    php:
+      extentions: .php .hph .phpello
+      path: /opt/homebrew/bin/php-cgi
+    python:
+      extentions: .py .pypy
+      path: ./help/cgi_tester #/opt/homebrew/bin/python3
+    user1:
+      extentions: .cpp
+      path: /opt/homebrew/bin/python3
+    user2:
+      extentions: .cpp
+      path: /opt/homebrew/bin/python3
+
+  location: /errors
+    deny: post
+  location: /
+    listing: on
   location: /test
     index: /index.html
   location: /pong
     alias: /website
-  location: /website
-    autoindex: on
-  location: /database
-    index: /index.html
   location: /post
     allow: post get
     deny: all

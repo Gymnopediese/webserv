@@ -6,21 +6,23 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 22:44:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/24 21:11:50 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 23:23:03 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "header.hpp"
+#include "Server/Server.hpp"
 
 
-vector<char *>	envp;
 
-int main(int argc, char **argv, char **env)
+int harl_mode;
+
+int main(int argc, char **argv)
 {
-	if (argc != 2)
-		error("invalid args boy");
-    for (int i = 0; env[i]; ++i)
-        envp.push_back(env[i]);
+	if (argc < 2 || argc > 3)
+		error("invalid args: ./webserv <config.yaml>");
+	harl_mode = 0;
+	if (argc > 3)
+		harl_mode = 0;
 	Server server(argv[1]);
 
 	server.loop();

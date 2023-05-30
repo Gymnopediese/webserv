@@ -1,0 +1,4 @@
+GET /salut HTTP/1.
+Host: albaud.42.ch:4242
+
+

@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 11:04:55 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/22 22:51:43 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/26 15:26:00 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ bool booler(string str, int line)
 	if (str == "on" || str == "true")
 		return (true);
 	if (str == "off" || str == "false")
-		return (true);
+		return (false);
 	syntax_error("invalid bolean", line);
 	return (false);
 }
@@ -55,14 +55,12 @@ unsigned long long int	ft_atoi(const char *str, long long int max, int line)
 		return result * sign * 1000000;
 	if (str[i + 1] == 0 && str[i] == 'g')
 		return result * sign * 1000000000;
-	cout << str << endl;
 	syntax_error("atoi: text in int", line);
 	return (0);
 }
 
 string	file_exist_parser(Config &res, string loc, int line, string add)
 {
-	cout << res.root + add + loc << endl;
 	if (!file_exist(res.root + add + loc) && !file_exist(loc))
 		syntax_error("non existing file", line);
 	return (loc);
@@ -70,7 +68,6 @@ string	file_exist_parser(Config &res, string loc, int line, string add)
 
 string	location_exist_parser(Config &res, string loc, int line, string add)
 {
-	cout << res.root + add + loc << endl;
 	if (dir_exist(res.root + add + loc) == false)
 		syntax_error("not a directory", line);
 	return (loc);

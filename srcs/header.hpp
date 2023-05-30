@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/29 00:46:01 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 00:52:53 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 09:31:48 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 # define HEADER_HPP
 
 #define TRY(a) try{a ;}catch (const std::exception& ex){cout <<"ERROR " << ex.what() << endl;}
+
+enum{
+	DEBUG,
+	INFOS,
+	WARNING,
+	ERROR,
+	FATAL,
+};
 
 #include <signal.h>
 #include <sys/time.h>
@@ -36,6 +44,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sstream>
+#include <dirent.h>
 
 using std::string;
 using std::cout;
@@ -43,7 +52,9 @@ using std::vector;
 using std::map;
 using std::endl;
 
-extern vector<char *> envp;
+void	harl(int mode, string message, string color = "");
+
+extern int harl_mode;
 
 typedef struct s_socket
 {
@@ -84,41 +95,28 @@ typedef struct s_location
 	map<string, std::pair<int, string> >	_return;
 }	t_location;
 
-#include "Utils/errors.hpp"
-#include "Request/Request.hpp"
-#include "Response/Response.hpp"
-#include "Config/Config.hpp"
-#include "Server/Server.hpp"
-
-#define RESET   "\033[0m"
-#define BLACK   "\033[30m"      /* Black */
-#define RED     "\033[31m"      /* Red */
-#define GREEN   "\033[32m"      /* Green */
-#define YELLOW  "\033[33m"      /* Yellow */
-#define BLUE    "\033[34m"      /* Blue */
-#define MAGENTA "\033[35m"      /* Magenta */
-#define CYAN    "\033[36m"      /* Cyan */
-#define WHITE   "\033[37m"      /* White */
-#define BOLDBLACK   "\033[1m\033[30m"      /* Bold Black */
-#define BOLDRED     "\033[1m\033[31m"      /* Bold Red */
-#define BOLDGREEN   "\033[1m\033[32m"      /* Bold Green */
-#define BOLDYELLOW  "\033[1m\033[33m"      /* Bold Yellow */
-#define BOLDBLUE    "\033[1m\033[34m"      /* Bold Blue */
-#define BOLDMAGENTA "\033[1m\033[35m"      /* Bold Magenta */
-#define BOLDCYAN    "\033[1m\033[36m"      /* Bold Cyan */
-#define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
+#define RESET   string("\033[0m")
+#define BLACK   string("\033[30m")      /* Black */
+#define RED     string("\033[31m")      /* Red */
+#define GREEN   string("\033[32m")      /* Green */
+#define YELLOW  string("\033[33m")      /* Yellow */
+#define BLUE    string("\033[34m")      /* Blue */
+#define MAGENTA string("\033[35m")      /* Magenta */
+#define CYAN    string("\033[36m")      /* Cyan */
+#define WHITE   string("\033[37m")      /* White */
+#define BOLDBLACK   string("\033[1m\033[30m"      /* Bold Black */
+#define BOLDRED     string("\033[1m\033[31m"      /* Bold Red */
+#define BOLDGREEN   string("\033[1m\033[32m"      /* Bold Green */
+#define BOLDYELLOW  string("\033[1m\033[33m"      /* Bold Yellow */
+#define BOLDBLUE    string("\033[1m\033[34m"      /* Bold Blue */
+#define BOLDMAGENTA string("\033[1m\033[35m"      /* Bold Magenta */
+#define BOLDCYAN    string("\033[1m\033[36m"      /* Bold Cyan */
+#define BOLDWHITE   string("\033[1m\033[37m"      /* Bold White */
 
 using namespace std;
 
-class Config;
-
-vector<Config> 			parse_conf_file(string file);
-map<string, Config*>	map_configs(vector<Config> &configs);
 bool					dir_exist(const std::string& name);
-// open a socket 
-t_socket			open_socket(int port);
-// open all socket 
-map<int, t_socket>	open_sockets(vector<Config> &configs, vector<pollfd>&fds);
+// open a socket
 
 
 void			error(const char *msg);
@@ -130,7 +128,6 @@ vector<string>	split(string to_split, string del);
 string			exec_php(string php);
 
 // map the configs 😱
-map<string, Config*> map_configs(vector<Config> &configs);
 
 string file_to_str(string filename);
 bool file_exist(const std::string& name);
@@ -142,7 +139,7 @@ void 	printr(string r);
 
 string	subfrom(string str, string sub);
 string	subfromto(string str, string sub, string subend);
-
+string strtoupper(string a);
 string	join(vector<string> to_split, int start, int end, string del);
 pair<string, string>	split2(string to_split, string del);
 
@@ -152,8 +149,7 @@ void	trim(vector<string>& str);
 int		spaces(string s);
 
 void strtolower(string &a);
-void strtoupper(string &a);
-
+string get_content_type(string file_extention);
 
 template <typename T, typename A>
 std::ostream& operator<<(std::ostream& os, const std::pair<T, A>& dt);
@@ -185,4 +181,19 @@ std::ostream& operator<<(std::ostream& os, const std::pair<T, A>& dt)
 	os << dt.first << ": " << dt.second << std::flush;
 	return (os);
 }
+
+template <typename T>
+bool	remove(vector<T> &v, T *elem)
+{
+	for (typename vector<T>::iterator i = v.begin(); i != v.end(); i++)
+	{
+		if (&(*i) == elem)
+		{
+			v.erase(i);
+			return (true);
+		}
+	}
+	return (false);
+}
+
 #endif

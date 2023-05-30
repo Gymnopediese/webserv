@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 23:17:02 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/22 23:31:56 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 19:24:28 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,6 @@ void append_file(const std::string& filename, const std::string& content) {
     if (file.is_open()) {
         file << content;
         file.close();
-        std::cout << "Text successfully appended to the file." << std::endl;
-    } else {
-        std::cout << "Unable to open the file." << std::endl;
     }
 }
 
@@ -46,12 +43,15 @@ string file_to_str(string filename)
 }
 
 bool file_exist(const std::string& name) {
-    ifstream f(name.c_str());
-    return f.good();
+    return access(name.c_str(), R_OK) == 0 && !dir_exist(name);
 }
 
 bool dir_exist(const std::string& name) {
 	errno = 0;
-    open(name.c_str(), O_WRONLY);
-    return errno == 21;
+
+	int	fd = open(name.c_str(), O_WRONLY);
+	int r = errno;
+
+	close(fd);
+    return r == 21;
 }

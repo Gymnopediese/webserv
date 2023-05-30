@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 16:14:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 00:52:55 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/30 00:46:05 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
 #define RESPONSE_HPP
 
 #include "../header.hpp"
-
-// definir comme ca les reponse error et normal
+#include "../Config/Config.hpp"
 
 typedef struct s_late
 {
@@ -40,13 +39,15 @@ public:
 	string				content;
 	vector<string>		header;
 	vector<string>		cookie;
-
 	Response();
-	Response(int status, Config &conf, string content = "");
+	Response(int status, Config *conf, string content = "");
 	~Response();
 	Response& operator=(const Response &copy);
 	bool	get_late_content();
 	string	str(void);
+	void			message(int fd);
 };
+
+string	get_date();
 
 #endif

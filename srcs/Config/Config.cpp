@@ -6,14 +6,20 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:34:30 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/24 14:21:26 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/27 10:29:42 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 
 Config::Config(vector<string> hostnames, int port, string root) : hostnames(hostnames), port(port), root(root){}
-Config::Config() : port(){}
+Config::Config() : port()
+{
+	client_max_body_size = 1000000;
+	this->port = 0;
+	this->root = "";
+	this->fd = 0;
+}
 Config::~Config(){}
 
 std::ostream& operator<<(std::ostream& os, const t_cgi& dt)

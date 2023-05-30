@@ -6,35 +6,36 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 23:23:44 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 00:56:33 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/30 08:21:53 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../header.hpp"
+#include "Request.hpp"
 
 #define VITER(type, variable) for (vector<type>::iterator val = variable.begin(); val < variable.end(); val++)
 
-void Request::get_cookies()
+string unchunk(string content)
 {
-	string 			cook;
-	vector<string>	vars;
-	vector<string>	var;
-
-	cook = headers["Cookie"];
-	if (cook == "")
-		return ;
-	vars = split(cook, "; ");
-	for (int i = 0; i < (int)vars.size(); i++)
+	vector<string> chunkes;
+	string res = "";
+	chunkes = split(content, "\r\n");
+	for (size_t i = 0; i < chunkes.size(); i++)
 	{
-		var = split(vars[i], "=");
-		cookie[var[0]] = var[1];
+		if (i % 2)
+			res += chunkes[i];
 	}
+	return (res);
 }
 
 void Request::get_post()
 {
+	if (chunked)
+	{
+		content = unchunk(content);
+		content_length = content.size();
+		return ;
+	}
 	int i;
-	cout << "lines" << endl;
 	boundary = "--" + subfrom(headers["Content-Type"], "boundary=");
 	if (boundary == "--")
 		return ;
@@ -49,7 +50,6 @@ void Request::get_post()
 			ind++;
 		if ((int)temp[ind].find("Content-Disposition:") != -1)
 		{
-			cout << temp[ind] << endl;
 			post.name = subfromto(temp[ind], "name=\"", "\"");
 			post.filename = subfromto(temp[ind], "filename=\"", "\"");
 			ind++;
@@ -73,34 +73,45 @@ void Request::get_post()
 	}
 }
 
-void Request::get_headers()
+void	Request::message(int fd)
 {
-	string		res = "";
-	char		b[1024 + 1];
+	string color;
+	if (type == "post")
+		color = MAGENTA;
+	else if (type == "get")
+		color = BLUE;
+	else
+		color = YELLOW;
+	harl(INFOS, color + "[Request from " + to_string(fd) + "] " + strtoupper(type) + " " + uri + " " + to_string(content_length) + " " + http_version + RESET, color);
+}
+
+bool Request::recv(int fd)
+{
+	char		b[2048 + 1];
 	int			size;
-	
-	errno = 0;
-	size = 1;
-	while (size)
+
+	size = ::recv(fd, b, 2048, MSG_DONTWAIT);
+	if (size <= 0)
+		throw size;
+	if (header_done)
 	{
-		size = recv(fd, b, 1024, 0);
-		if (size <= 0)
-		{
-			perror("retars");
-			break;
-		}
-		b[size] = 0;
-        res.append(b, size);
-		if (res.find("\r\n\r\n") >= 0)
-		{
-			std::pair<string, string> pair = split2(res, "\r\n\r\n");
-			header = pair.first;
-			content = pair.second;
-			return ;
-		}
+		content.append(b, size);
+		return (false);
 	}
-	error("invalid request");
-	return ;
+	header.append(b, size);
+	if (header.size() > 15000)
+	{
+		cout << header.size() << endl;
+		throw 431;
+	}
+	if ((int)header.find("\r\n\r\n") < 0)
+		return (false);
+	std::pair<string, string> pair = split2(header, "\r\n\r\n");
+	header = pair.first;
+	content = pair.second;
+	parse_request();
+	header_done = true;
+	return (true);
 }
 
 int get_divider(long long int s)
@@ -110,60 +121,40 @@ int get_divider(long long int s)
 	return (n);
 }
 
-void Request::get_body(long long int s)
-{
-	if (s - content.length() < 0)
-		error("413 mes gross couilles");
-	s -= content.length();
-	int				n = get_divider(s);
-	string			res = "";
-	char			b[s / n + 1];
-	int				size = 1;
-	long long int	r = 0;
-
-	r = 0;
-	while (1)
-	{
-		if (r > s)
-			error("413 mes gross couilles");
-		size = recv(fd, b, s / n, 0);
-		if (size <= 0)
-		{
-			perror("no body");
-			if (type == "POST")
-				get_post();
-			return ;
-		}
-		b[size] = 0;
-        res.append(header, size);
-	}
-}
-
 void	Request::add_headers(vector<string> lines)
 {
 	std::pair<string, string> pair;
 	for (size_t i = 1; i < lines.size(); i++)
 	{
 		pair = split2(lines[i], ": ");
-		if (pair.first != "")
+		if (pair.first != lines[i])
 			headers[pair.first] = pair.second;
 		else
-			error("invalid headers");
+			throw 422;
 	}
 }
 
-Request::Request(int fd) : fd(fd)
+void	Request::parse_request()
 {
-	get_headers();
 	std::pair<string, string> pair;
 	vector<string> lignes = split(header, "\r\n");
 	vector<string> key_pair = split(lignes[0], " ");
-	
+	if (key_pair.size() != 3)
+		throw 422;
+	content_length = 0;
 	type = key_pair[0];
 	strtolower(type);
+	if (type == "teapots")
+		throw 418;
+	if (type != "post" && type != "get" && type != "delete")
+		throw 501;
 	http_version = key_pair[2];
+	if (http_version != "HTTP/1.1")
+		throw 505;
 	file = key_pair[1];
 	uri = key_pair[1];
+	if (uri.length() >= 8190)
+		throw 414;
 	query = split2(uri, "?").second;
 	uri = split2(uri, "?").first;
 	file = uri;
@@ -178,14 +169,20 @@ Request::Request(int fd) : fd(fd)
 	pair = split2(headers["Host"], ":");
 	host = pair.first;
 	port = pair.second;
-	get_cookies();
-
-	cout << header << endl;
-	if (type == "POST")
-	{
-		content_type = split2(headers["Content-Type"], ";").first;
-	}
+	if (type != "post")
+		return ;
+	if (headers["Transfer-Encoding"] == "chunked")
+		chunked = true;
+	if (!chunked && headers.find("Content-Length") == headers.end())
+		throw 411;
+	if (!chunked)
+		content_length = strtoll(headers["Content-Length"].c_str(), 0, 10);
+	else
+		content_length = -1;
 }
 
-Request::Request(void){}
+Request::Request(void): start_time(get_time()), header_done(false), chunked(false), content_length(-1)
+{
+
+}
 Request::~Request(){}

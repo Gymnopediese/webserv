@@ -1,0 +1,15 @@
+POST / HTTP/1.1
+Host: albaud.42.ch:4242
+Content-Type: multipart/form-data; boundary=KOKO
+Content-Length: 197
+
+--KOKO
+Content-Disposition: form-data; name="text"
+
+Hello, World!
+---KOKO
+Content-Disposition: form-data; name="file"; filename="hello.txt"
+Content-Type: text/plain
+
+Hello, World!
+--KOKO--

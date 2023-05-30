@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 10:42:35 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/22 22:59:09 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/27 17:58:21 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define PARSER_HPP
 
 #include "../header.hpp"
+#include "../Config/Config.hpp"
 
 typedef struct s_data
 {

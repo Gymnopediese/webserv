@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chunked POST Request</title>
+  <script>
+    function sendChunkedRequest() {
+      var data = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+      var chunkSize = 10; // Chunk size in characters
+      var totalChunks = Math.ceil(data.length / chunkSize);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/chunked.html', true);
+      xhr.setRequestHeader('Transfer-Encoding', 'chunked');
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log(xhr.responseText);
+        }
+      };
+      
+      for (var i = 0; i < totalChunks; i++) {
+        var start = i * chunkSize;
+        var end = start + chunkSize;
+        var chunk = data.substring(start, end);
+        xhr.send(chunk);
+      }
+    }
+  </script>
+</head>
+<body>
+  <button onclick="sendChunkedRequest()">Send Chunked Request</button>
+</body>
+</html>

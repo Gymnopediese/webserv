@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:24:26 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 11:01:37 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 23:20:27 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,12 @@ Config parse_conf(vector<t_line> &lines, int &start)
 		else
 			argument_error(lines[start].val, 1, start);
 	}
+	if (conf.port == 0)
+		syntax_error("no port set", start);
+	if (conf.root == "")
+		syntax_error("no root set", start);
+	if (conf.hostnames.size() == 0)
+		syntax_error("no hostname", start);
 	return conf;
 }
 
@@ -81,8 +87,11 @@ map<string, t_data>	data()
 	res["error"] 				= (t_data){2, 0, 0};
 
 	//ADD CODE ERRORS
+	res["400"] 					= (t_data){4, 1, 1};
 	res["404"] 					= (t_data){4, 1, 1};
 	res["405"] 					= (t_data){4, 1, 1};
+	res["408"] 					= (t_data){4, 1, 1};
+	res["413"] 					= (t_data){4, 1, 1};
 
 	res["location"] 			= (t_data){2, 1, 1};
 	res["tryfile"] 				= (t_data){4, 1, 1};
@@ -92,7 +101,7 @@ map<string, t_data>	data()
 	res["delete"] 				= (t_data){6, 1, 2};
 	res["all"] 					= (t_data){6, 1, 2};
 	res["alias"] 				= (t_data){4, 1, 1};
-	res["autoindex"] 			= (t_data){4, 1, 1};
+	res["listing"] 				= (t_data){4, 1, 1};
 	res["index"] 				= (t_data){4, 1, 1};
 	res["download"] 				= (t_data){4, 1, 4};
 	res["allow"] 				= (t_data){4, 1, 4};
@@ -150,7 +159,6 @@ vector<Config> parse_conf_file(string file)
 			continue ;
 		res.push_back(parse_conf(lines, i));
 	}
-	cout << res[0] << endl;
 	return (res);
 }
 

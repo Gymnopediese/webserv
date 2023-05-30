@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 16:14:50 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 10:43:05 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 11:57:23 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,23 @@ class Request
 private:
 
 public:
-	string				http_version;
+
+	size_t				start_time;
+	bool				header_done;
+	bool				chunked;
 	string				content;
-	string				boundary;
+	size_t				content_length;
 	string				content_type;
+
+	string				http_version;
+	string				path_info;
+	string				global_path_info;
+
+	string				boundary;
 	map<string, string>	headers;
 	string				header;
 	int					fd;
 	string				uri;
-	string				path_info;
-	string				global_path_info;
 	string				query;
 	string				file;
 	string				file_extention;
@@ -47,16 +54,14 @@ public:
 	string				port;
 	string				host;
 	vector<t_post>		post;
-	map<string, string>	cookie;
+	long long int		client_max_body_size;
 	Request(void);
-	Request(int fd);
-	void	get_headers();
-	void	get_body(long long int size);
-	void	get_cookies();
-	void	get_post();
-
-	void	add_headers(vector<string> lines);
-
+	bool				recv(int fd);
+	bool				get_body(int fd, long long int s);
+	void				get_post();
+	void				message(int fd);
+	void				add_headers(vector<string> lines);
+	void				parse_request();
 	~Request();
 };
 #endif

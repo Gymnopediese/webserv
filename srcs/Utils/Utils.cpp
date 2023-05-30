@@ -6,15 +6,15 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/29 18:48:22 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 00:52:45 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/29 10:09:46 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header.hpp"
 
-void error(const char *msg)
+void	error(const char *msg)
 {
-    perror(msg);
+	cerr << "Webserv: Error: " << msg << endl;
     exit(1);
 }
 
@@ -24,10 +24,11 @@ void strtolower(string &a) {
 		a[i] = tolower(a[i]);
 }
 
-void strtoupper(string &a) {
+string strtoupper(string a) {
 	int i = -1;
     while(a[++i])
 		a[i] = toupper(a[i]);
+	return (a);
 }
 
 std::string trim(const std::string& str) {

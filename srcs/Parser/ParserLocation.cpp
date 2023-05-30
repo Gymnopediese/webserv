@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/22 11:04:08 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 11:01:41 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/30 08:27:37 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	parse_allowance(t_location &location, const t_line &line, int &start, int m
 			if (location.allowed["delete"] == 1)
 				location.allowed["delete"] = mode;
 		}
-		else
+		else if (location.allowed[line.args[i]] == 1)
 			location.allowed[line.args[i]] = mode;
 	}
 	start++;
@@ -65,13 +65,13 @@ t_location parse_location(Config &conf, vector<t_line> &lines, int &start)
 	res.allowed["get"] = 1;
 	res.allowed["post"] = 1;
 	res.allowed["delete"] = 1;
-	(void)lines;
-	(void)start;
+	res.index = "";
+	res.repertory_listing = true;
 	res.path = lines[start].args[0];
 	start++;
 	while (start < (int)lines.size() && lines[start].indentation == 4)
 	{
-		if (lines[start].val == "autoindex" && ++start)
+		if (lines[start].val == "listing" && ++start)
 			res.repertory_listing = booler(lines[start - 1].args[0], start - 1);
 		else if (lines[start].val == "index" && ++start)
 			res.index = file_exist_parser(conf, lines[start - 1].args[0], start - 1);
@@ -80,7 +80,7 @@ t_location parse_location(Config &conf, vector<t_line> &lines, int &start)
 		else if (lines[start].val == "types")
 			res.types = lines[start++].args;
 		else if (lines[start].val == "download" && ++start)
-			res.alias = location_exist_parser(conf, lines[start - 1].args[0], start - 1);
+			res.database = location_exist_parser(conf, lines[start - 1].args[0], start - 1);
 		else if (lines[start].val == "alias" && ++start)
 			res.alias = location_exist_parser(conf, lines[start - 1].args[0], start - 1);
 		else if (lines[start].val == "allow")

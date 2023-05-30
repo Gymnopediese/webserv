@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:37:57 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/24 12:46:17 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/26 16:41:33 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,5 +17,5 @@
 Response Config::get(Request &request)
 {
 	
-	return (Response(200, *this, request.content));
+	return (Response(200, this, request.content));
 }

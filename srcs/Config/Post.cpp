@@ -6,7 +6,7 @@
 /*   By: albaud <albaud@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/19 19:37:57 by albaud            #+#    #+#             */
-/*   Updated: 2023/05/25 00:52:59 by albaud           ###   ########.fr       */
+/*   Updated: 2023/05/30 00:47:19 by albaud           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,17 @@ string date()
 	return (d.str());
 }
 
-void	Config::_post(Request &request, Response &response)
+void	Config::_post(Request &request, t_location &t)
 {
-	(void)request;
-	(void)response;
-	// for (int i = 0; i < (int)request.post.size(); i++)
-	// {
-	// 	if (request.post[i].filename != "")
-	// 		create_file("database/" + request.post[i].filename, request.post[i].content);
-	// 	else
-	// 		append_file("database/" + request.post[i].name, date() + request.post[i].content + "\n");
-	// }
+	for (int i = 0; i < (int)request.post.size(); i++)
+	{
+		string database = "database/";
+		if (t.database != "")
+			database = t.database;
+		cout << "mmmmm" << database << " " << request.post[i].filename << endl;
+		if (request.post[i].filename != "")
+			create_file(database + request.post[i].filename, request.post[i].content);
+		else
+			append_file(database + request.post[i].name, get_date() + "\n" + request.post[i].content + "\n");
+	}
 }
